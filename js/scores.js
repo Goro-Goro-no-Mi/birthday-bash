@@ -107,7 +107,7 @@ function renderTeamGames(teamId, container) {
 
     card.innerHTML = `
       <div class="score-card-header">
-        <span class="sport-dot ${game.sport}"></span>
+        <span style="font-size:1.1rem">${game.sport === 'volleyball' ? '🏐' : '🥏'}</span>
         <span class="sport-badge ${game.sport}">${sportLabel(game.sport)}</span>
         <span class="score-card-meta">${game.time} · ${fieldLabel(game.field)}</span>
       </div>
