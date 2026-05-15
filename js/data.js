@@ -1,24 +1,44 @@
 // ── TEAMS ───────────────────────────────────────────────────
-// Placeholder names — replace with real team names later.
-// player1 / player2 = the two members of each pair.
-
 const TEAMS = [
-  { id: 1,  name: "Team 1",  player1: "Spieler A",  player2: "Spieler B"  },
-  { id: 2,  name: "Team 2",  player1: "Spieler C",  player2: "Spieler D"  },
-  { id: 3,  name: "Team 3",  player1: "Spieler E",  player2: "Spieler F"  },
-  { id: 4,  name: "Team 4",  player1: "Spieler G",  player2: "Spieler H"  },
-  { id: 5,  name: "Team 5",  player1: "Spieler I",  player2: "Spieler J"  },
-  { id: 6,  name: "Team 6",  player1: "Spieler K",  player2: "Spieler L"  },
-  { id: 7,  name: "Team 7",  player1: "Spieler M",  player2: "Spieler N"  },
-  { id: 8,  name: "Team 8",  player1: "Spieler O",  player2: "Spieler P"  },
-  { id: 9,  name: "Team 9",  player1: "Spieler Q",  player2: "Spieler R"  },
-  { id: 10, name: "Team 10", player1: "Spieler S",  player2: "Spieler T"  },
-  { id: 11, name: "Team 11", player1: "Spieler U",  player2: "Spieler V"  },
-  { id: 12, name: "Team 12", player1: "Spieler W",  player2: "Spieler X"  },
-  { id: 13, name: "Team 13", player1: "Spieler Y",  player2: "Spieler Z"  },
-  { id: 14, name: "Team 14", player1: "Spieler AA", player2: "Spieler BB" },
-  { id: 15, name: "Team 15", player1: "Spieler CC", player2: "Spieler DD" },
+  { id: 1,  player1: "Olivia",   player2: "Noah"     },
+  { id: 2,  player1: "Calvin",   player2: "Féde"     },
+  { id: 3,  player1: "Valentin", player2: "Nicolas"  },
+  { id: 4,  player1: "Mischa",   player2: "Armin"    },
+  { id: 5,  player1: "Maja",     player2: "Roland"   },
+  { id: 6,  player1: "Annina",   player2: "Beda"     },
+  { id: 7,  player1: "Elia",     player2: "Luis"     },
+  { id: 8,  player1: "Alan",     player2: "Dino"     },
+  { id: 9,  player1: "Silvan",   player2: "Lukas"    },
+  { id: 10, player1: "Valentina",player2: "Filiz"    },
+  { id: 11, player1: "Moritz",   player2: "Dave"     },
+  { id: 12, player1: "Sophie",   player2: "Lucy"     },
+  { id: 13, player1: "Roxane",   player2: "David S." },
+  { id: 14, player1: "Eli",      player2: "Pascal"   },
+  { id: 15, player1: "Lorenzo",  player2: "Bianca"   },
 ];
+
+// ── TEAM NAMES (custom, loaded from Firebase) ────────────────
+let teamNamesCache = {};
+
+function getAutoName(team) {
+  const p1 = (team.player1 || '').substring(0, 2);
+  const p2 = (team.player2 || '').substring(0, 2);
+  return p1 + p2;
+}
+
+function getTeamDisplayName(id) {
+  const team = getTeam(id);
+  if (!team) return `Team ${id}`;
+  return teamNamesCache[id] || getAutoName(team);
+}
+
+// Returns "TeamName (Player1 & Player2)" with players in small tag
+function getTeamFullDisplay(id) {
+  const team = getTeam(id);
+  if (!team) return `Team ${id}`;
+  const name = getTeamDisplayName(id);
+  return `${name} <small style="opacity:.6;font-weight:400">(${team.player1} &amp; ${team.player2})</small>`;
+}
 
 // ── SCHEDULE ────────────────────────────────────────────────
 // 45 games, each team plays exactly 6 games.
@@ -111,8 +131,7 @@ function getTeam(id) {
 }
 
 function getTeamName(id) {
-  const t = getTeam(id);
-  return t ? t.name : `Team ${id}`;
+  return getTeamDisplayName(id);
 }
 
 function getGamesByTeam(teamId) {

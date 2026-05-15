@@ -71,9 +71,9 @@
       card.className = 'team-card';
       card.innerHTML = `
         <div class="team-number">Team ${team.id}</div>
-        <div class="team-name">${team.name}</div>
+        <div class="team-name">${getTeamDisplayName(team.id)}</div>
         <div class="team-players">
-          ${team.player1}<br>${team.player2}
+          ${team.player1} &amp; ${team.player2}
         </div>
         <div class="team-stats">
           <span class="stat-badge win">✓ ${wins}</span>
@@ -86,8 +86,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    renderTeams({}); // sofort rendern
+    renderTeams({});
     try {
+      db.ref('teamNames').on('value', snap => {
+        teamNamesCache = snap.val() || {};
+        renderTeams({});
+      });
       db.ref('scores').on('value', snap => {
         renderTeams(snap.val() || {});
       });

@@ -7,26 +7,80 @@ function initScores() {
   const teamSelect = document.getElementById('team-select');
   const gamesContainer = document.getElementById('games-container');
 
-  // Populate team dropdown
+  // Populate team dropdown with auto-names + player names
   TEAMS.forEach(t => {
     const opt = document.createElement('option');
     opt.value = t.id;
-    opt.textContent = t.name;
+    opt.textContent = `${getAutoName(t)} (${t.player1} & ${t.player2})`;
     teamSelect.appendChild(opt);
+  });
+
+  // Load team names from Firebase
+  db.ref('teamNames').on('value', snap => {
+    teamNamesCache = snap.val() || {};
+    // Update dropdown labels
+    teamSelect.querySelectorAll('option[value]').forEach(opt => {
+      const id = parseInt(opt.value);
+      if (!id) return;
+      const t = getTeam(id);
+      if (!t) return;
+      const name = teamNamesCache[id] || getAutoName(t);
+      opt.textContent = `${name} (${t.player1} & ${t.player2})`;
+    });
+    if (selectedTeamId) renderNameSection(selectedTeamId);
   });
 
   teamSelect.addEventListener('change', () => {
     selectedTeamId = parseInt(teamSelect.value);
+    renderNameSection(selectedTeamId);
     renderTeamGames(selectedTeamId, gamesContainer);
   });
 
   // Listen to all scores in Firebase
   db.ref('scores').on('value', snap => {
     allScores = snap.val() || {};
-    if (selectedTeamId) {
-      renderTeamGames(selectedTeamId, gamesContainer);
-    }
+    if (selectedTeamId) renderTeamGames(selectedTeamId, gamesContainer);
   });
+}
+
+function renderNameSection(teamId) {
+  const section = document.getElementById('name-section');
+  const team = getTeam(teamId);
+  if (!team || !section) return;
+
+  const existing = teamNamesCache[teamId];
+  const autoName = getAutoName(team);
+
+  if (existing) {
+    section.innerHTML = `
+      <div class="alert alert-success" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+        <span>Teamname: <strong>${existing}</strong> <small style="opacity:.6">(${team.player1} & ${team.player2})</small></span>
+        <button class="btn btn-ghost btn-sm" onclick="resetTeamName(${teamId})">Ändern</button>
+      </div>`;
+  } else {
+    section.innerHTML = `
+      <div class="card" style="margin-bottom:1.5rem">
+        <p style="margin-bottom:.75rem;font-size:.9rem;color:var(--text-muted)">
+          Möchtet ihr eurem Team einen Namen geben?<br>
+          <small>Ohne Eingabe lautet euer Name automatisch <strong>${autoName}</strong> (${team.player1} & ${team.player2})</small>
+        </p>
+        <div style="display:flex;gap:.5rem">
+          <input type="text" id="team-name-input" placeholder="${autoName}" maxlength="20" style="flex:1">
+          <button class="btn btn-primary" onclick="saveTeamName(${teamId})">Speichern</button>
+        </div>
+      </div>`;
+  }
+}
+
+async function saveTeamName(teamId) {
+  const input = document.getElementById('team-name-input');
+  const name = (input ? input.value.trim() : '') || getAutoName(getTeam(teamId));
+  await db.ref(`teamNames/${teamId}`).set(name);
+  showToast(`Teamname "${name}" gespeichert ✓`);
+}
+
+async function resetTeamName(teamId) {
+  await db.ref(`teamNames/${teamId}`).remove();
 }
 
 function renderTeamGames(teamId, container) {

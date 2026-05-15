@@ -4,17 +4,17 @@ function initLeaderboard() {
   const tbody = document.getElementById('lb-body');
   const lastUpdated = document.getElementById('last-updated');
 
-  // sofort mit leeren Scores rendern
   renderLeaderboard(computeStandings({}), tbody);
 
   try {
+    db.ref('teamNames').on('value', snap => {
+      teamNamesCache = snap.val() || {};
+    });
     db.ref('scores').on('value', snap => {
       const scores = snap.val() || {};
       const standings = computeStandings(scores);
       renderLeaderboard(standings, tbody);
-      if (lastUpdated) {
-        lastUpdated.textContent = new Date().toLocaleTimeString('de-CH');
-      }
+      if (lastUpdated) lastUpdated.textContent = new Date().toLocaleTimeString('de-CH');
     });
   } catch(e) { console.warn('Firebase nicht verbunden:', e); }
 }
@@ -67,7 +67,7 @@ function renderLeaderboard(standings, tbody) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="rank ${rankClass}">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}</td>
-      <td class="lb-team">${team.name}</td>
+      <td class="lb-team">${getTeamFullDisplay(team.id)}</td>
       <td class="lb-w">${team.w}</td>
       <td class="lb-l">${team.l}</td>
       <td>${diffStr}</td>

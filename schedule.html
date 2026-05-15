@@ -121,8 +121,12 @@
   });
 
   document.addEventListener('DOMContentLoaded', () => {
-    renderSchedule(); // sofort mit leeren Scores rendern
+    renderSchedule();
     try {
+      db.ref('teamNames').on('value', snap => {
+        teamNamesCache = snap.val() || {};
+        renderSchedule();
+      });
       db.ref('scores').on('value', snap => {
         currentScores = snap.val() || {};
         renderSchedule();
