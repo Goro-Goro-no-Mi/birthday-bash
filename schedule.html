@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule · Birthday Bash</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">🏖️ Birthday Bash</a>
+  <ul class="nav-links">
+    <li><a href="teams.html">Teams</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="scores.html">Scores</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="nav-mobile" class="nav-mobile">
+  <a href="teams.html">👥 Teams</a>
+  <a href="schedule.html">📅 Schedule</a>
+  <a href="scores.html">🏐 Scores</a>
+  <a href="leaderboard.html">🏆 Leaderboard</a>
+</div>
+
+<div class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>📅 Spielplan</h1>
+      <p>Samstag, 23. Mai 2026 · 14:00–19:00 · Strandbad Davos</p>
+    </div>
+
+    <div class="schedule-filters">
+      <button class="filter-btn active" data-filter="all">Alle</button>
+      <button class="filter-btn" data-filter="volleyball">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bv-color);margin-right:4px"></span>Volleyball
+      </button>
+      <button class="filter-btn" data-filter="spikeball">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--spk-color);margin-right:4px"></span>Spikeball
+      </button>
+    </div>
+
+    <div id="schedule-container">
+      <div class="loading"><div class="spinner"></div><br>Lade Spielplan…</div>
+    </div>
+  </div>
+
+  <footer>Beach Volleyball & Spikeball · Davos 2026</footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script>
+  let currentFilter = 'all';
+  let currentScores = {};
+
+  function renderSchedule() {
+    const container = document.getElementById('schedule-container');
+    container.innerHTML = '';
+
+    const filtered = GAMES.filter(g =>
+      currentFilter === 'all' || g.sport === currentFilter
+    );
+
+    // Group by time slot
+    const byTime = {};
+    filtered.forEach(g => {
+      if (!byTime[g.time]) byTime[g.time] = [];
+      byTime[g.time].push(g);
+    });
+
+    Object.keys(byTime).sort().forEach(time => {
+      const group = document.createElement('div');
+      group.className = 'time-group';
+      group.innerHTML = `<div class="time-label">🕐 ${time} Uhr</div>`;
+
+      byTime[time].forEach(game => {
+        const s = currentScores[game.id];
+        const isDone = s && s.score1 !== null && s.score2 !== null;
+        const scoreText = isDone ? `${s.score1} : ${s.score2}` : '';
+
+        const row = document.createElement('div');
+        row.className = `game-row${isDone ? ' done' : ''}`;
+        row.innerHTML = `
+          <span class="sport-dot ${game.sport}"></span>
+          <span class="game-field">${game.field}</span>
+          <span class="game-teams">
+            ${getTeamName(game.team1)}<span class="game-vs">vs</span>${getTeamName(game.team2)}
+          </span>
+          ${isDone
+            ? `<span class="game-score">${scoreText}</span>`
+            : `<span class="sport-badge ${game.sport}">${game.sport === 'volleyball' ? 'BV' : 'SPK'}</span>`
+          }
+        `;
+        group.appendChild(row);
+      });
+
+      container.appendChild(group);
+    });
+
+    if (container.innerHTML === '') {
+      container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><p>Keine Spiele gefunden.</p></div>';
+    }
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderSchedule();
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderSchedule(); // sofort mit leeren Scores rendern
+    try {
+      db.ref('scores').on('value', snap => {
+        currentScores = snap.val() || {};
+        renderSchedule();
+      });
+    } catch(e) { console.warn('Firebase nicht verbunden:', e); }
+  });
+</script>
+</body>
+</html>

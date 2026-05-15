@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard · Birthday Bash</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">🏖️ Birthday Bash</a>
+  <ul class="nav-links">
+    <li><a href="teams.html">Teams</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="scores.html">Scores</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="nav-mobile" class="nav-mobile">
+  <a href="teams.html">👥 Teams</a>
+  <a href="schedule.html">📅 Schedule</a>
+  <a href="scores.html">🏐 Scores</a>
+  <a href="leaderboard.html">🏆 Leaderboard</a>
+</div>
+
+<div class="page">
+  <div class="container">
+    <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+      <div>
+        <h1>🏆 Leaderboard</h1>
+        <p>Aktualisiert: <span id="last-updated">–</span></p>
+      </div>
+      <div class="live-badge">
+        <span class="live-dot"></span> Live
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team</th>
+            <th>S</th>
+            <th>N</th>
+            <th>Diff</th>
+            <th>Spiele</th>
+          </tr>
+        </thead>
+        <tbody id="lb-body">
+          <tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:1rem;font-size:0.8rem;color:var(--text-muted)">
+      S = Siege · N = Niederlagen · Diff = Punktedifferenz · Sortierung: Siege → Diff → Punkte
+    </div>
+  </div>
+
+  <footer>Beach Volleyball & Spikeball · Davos 2026</footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/leaderboard.js"></script>
+</body>
+</html>

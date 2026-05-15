@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scores · Birthday Bash</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">🏖️ Birthday Bash</a>
+  <ul class="nav-links">
+    <li><a href="teams.html">Teams</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="scores.html">Scores</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="nav-mobile" class="nav-mobile">
+  <a href="teams.html">👥 Teams</a>
+  <a href="schedule.html">📅 Schedule</a>
+  <a href="scores.html">🏐 Scores</a>
+  <a href="leaderboard.html">🏆 Leaderboard</a>
+</div>
+
+<div class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>🏐 Scores eintragen</h1>
+      <p>Wähle dein Team und trage die Spielresultate ein.</p>
+    </div>
+
+    <div class="team-select-wrap">
+      <label for="team-select">Mein Team</label>
+      <select id="team-select">
+        <option value="" disabled selected>– Team auswählen –</option>
+      </select>
+    </div>
+
+    <div id="games-container">
+      <div class="empty-state">
+        <span class="icon">👆</span>
+        <p>Wähle zuerst dein Team aus.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Beach Volleyball & Spikeball · Davos 2026</footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/scores.js"></script>
+</body>
+</html>

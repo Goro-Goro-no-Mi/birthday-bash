@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teams · Birthday Bash</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">🏖️ Birthday Bash</a>
+  <ul class="nav-links">
+    <li><a href="teams.html">Teams</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="scores.html">Scores</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="nav-mobile" class="nav-mobile">
+  <a href="teams.html">👥 Teams</a>
+  <a href="schedule.html">📅 Schedule</a>
+  <a href="scores.html">🏐 Scores</a>
+  <a href="leaderboard.html">🏆 Leaderboard</a>
+</div>
+
+<div class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>👥 Teams</h1>
+      <p>15 Teams · Beach Volleyball & Spikeball · Davos 2026</p>
+    </div>
+
+    <div class="teams-grid" id="teams-grid">
+      <div class="loading"><div class="spinner"></div><br>Lade Teams…</div>
+    </div>
+  </div>
+
+  <footer>Beach Volleyball & Spikeball · Davos 2026</footer>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/nav.js"></script>
+<script>
+  function renderTeams(scores) {
+    const grid = document.getElementById('teams-grid');
+    grid.innerHTML = '';
+
+    TEAMS.forEach(team => {
+      const games = getGamesByTeam(team.id);
+      let wins = 0, losses = 0;
+
+      games.forEach(g => {
+        const s = scores[g.id];
+        if (!s || s.score1 === null || s.score2 === null) return;
+        const isT1 = g.team1 === team.id;
+        const myScore = isT1 ? s.score1 : s.score2;
+        const theirScore = isT1 ? s.score2 : s.score1;
+        if (myScore > theirScore) wins++;
+        else if (theirScore > myScore) losses++;
+      });
+
+      const card = document.createElement('div');
+      card.className = 'team-card';
+      card.innerHTML = `
+        <div class="team-number">Team ${team.id}</div>
+        <div class="team-name">${team.name}</div>
+        <div class="team-players">
+          ${team.player1}<br>${team.player2}
+        </div>
+        <div class="team-stats">
+          <span class="stat-badge win">✓ ${wins}</span>
+          <span class="stat-badge loss">✗ ${losses}</span>
+          <span class="stat-badge" style="color:var(--text-muted)">${games.length - wins - losses} offen</span>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTeams({}); // sofort rendern
+    try {
+      db.ref('scores').on('value', snap => {
+        renderTeams(snap.val() || {});
+      });
+    } catch(e) { console.warn('Firebase nicht verbunden:', e); }
+  });
+</script>
+</body>
+</html>

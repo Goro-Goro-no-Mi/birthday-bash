@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beda's Birthday Bash 🎉</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">🏖️ Birthday Bash</a>
+  <ul class="nav-links">
+    <li><a href="teams.html">Teams</a></li>
+    <li><a href="schedule.html">Schedule</a></li>
+    <li><a href="scores.html">Scores</a></li>
+    <li><a href="leaderboard.html">Leaderboard</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="nav-mobile" class="nav-mobile">
+  <a href="teams.html">👥 Teams</a>
+  <a href="schedule.html">📅 Schedule</a>
+  <a href="scores.html">🏐 Scores</a>
+  <a href="leaderboard.html">🏆 Leaderboard</a>
+</div>
+
+<div class="page">
+  <div class="hero">
+    <span class="hero-emoji">🎂</span>
+    <h1>Beda's Birthday Bash</h1>
+    <p class="hero-sub">Samstag, 23. Mai 2026 · ab 14:00 Uhr</p>
+    <p class="hero-location">📍 Strandbad Davoser See</p>
+
+    <div class="countdown" id="countdown">
+      <div class="countdown-unit"><span class="num" id="cd-days">–</span><span class="label">Tage</span></div>
+      <div class="countdown-unit"><span class="num" id="cd-hours">–</span><span class="label">Stunden</span></div>
+      <div class="countdown-unit"><span class="num" id="cd-min">–</span><span class="label">Minuten</span></div>
+      <div class="countdown-unit"><span class="num" id="cd-sec">–</span><span class="label">Sekunden</span></div>
+    </div>
+
+    <div class="nav-cards">
+      <a href="teams.html" class="nav-card">
+        <span class="icon">👥</span>
+        <span class="label">Teams</span>
+      </a>
+      <a href="schedule.html" class="nav-card">
+        <span class="icon">📅</span>
+        <span class="label">Schedule</span>
+      </a>
+      <a href="scores.html" class="nav-card">
+        <span class="icon">🏐</span>
+        <span class="label">Scores</span>
+      </a>
+      <a href="leaderboard.html" class="nav-card">
+        <span class="icon">🏆</span>
+        <span class="label">Leaderboard</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    Beach Volleyball & Spikeball · 15 Teams · Davos 2026
+  </footer>
+</div>
+
+<script src="js/nav.js"></script>
+<script>
+  // Countdown to 23.05.2026 14:00
+  const target = new Date('2026-05-23T14:00:00');
+  function updateCountdown() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '0';
+      document.getElementById('cd-hours').textContent = '0';
+      document.getElementById('cd-min').textContent = '0';
+      document.getElementById('cd-sec').textContent = '🎉';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent = d;
+    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-min').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-sec').textContent = String(s).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
