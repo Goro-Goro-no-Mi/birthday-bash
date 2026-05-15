@@ -90,7 +90,7 @@
         const row = document.createElement('div');
         row.className = `game-row${isDone ? ' done' : ''}`;
         row.innerHTML = `
-          <span style="font-size:1rem">${game.sport === 'volleyball' ? '🏐' : '🥏'}</span>
+          <span class="sport-dot ${game.sport}"></span>
           <span class="game-field">${game.field}</span>
           <span class="game-teams">
             ${getTeamName(game.team1)}<span class="game-vs">vs</span>${getTeamName(game.team2)}
