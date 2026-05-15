@@ -22,7 +22,7 @@ function initLeaderboard() {
 function computeStandings(scores) {
   const stats = {};
   TEAMS.forEach(t => {
-    stats[t.id] = { id: t.id, name: t.name, w: 0, l: 0, pf: 0, pa: 0 };
+    stats[t.id] = { id: t.id, name: t.name, w: 0, d: 0, l: 0, pts: 0, pf: 0, pa: 0 };
   });
 
   GAMES.forEach(game => {
@@ -37,21 +37,23 @@ function computeStandings(scores) {
     stats[game.team2].pa += s1;
 
     if (s1 > s2) {
-      stats[game.team1].w++;
+      stats[game.team1].w++;  stats[game.team1].pts += 3;
       stats[game.team2].l++;
     } else if (s2 > s1) {
-      stats[game.team2].w++;
+      stats[game.team2].w++;  stats[game.team2].pts += 3;
       stats[game.team1].l++;
+    } else {
+      stats[game.team1].d++;  stats[game.team1].pts += 1;
+      stats[game.team2].d++;  stats[game.team2].pts += 1;
     }
-    // Draw: no w/l awarded
   });
 
   return Object.values(stats).sort((a, b) => {
-    if (b.w !== a.w) return b.w - a.w;               // most wins first
+    if (b.pts !== a.pts) return b.pts - a.pts;        // meiste Punkte
     const diffA = a.pf - a.pa;
     const diffB = b.pf - b.pa;
-    if (diffB !== diffA) return diffB - diffA;        // best point diff
-    return b.pf - a.pf;                               // most points scored
+    if (diffB !== diffA) return diffB - diffA;        // beste Punktedifferenz
+    return b.pf - a.pf;                               // meiste erzielte Punkte
   });
 }
 
@@ -68,10 +70,11 @@ function renderLeaderboard(standings, tbody) {
     tr.innerHTML = `
       <td class="rank ${rankClass}">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}</td>
       <td class="lb-team">${getTeamFullDisplay(team.id)}</td>
+      <td class="lb-pts">${team.pts}</td>
       <td class="lb-w">${team.w}</td>
+      <td style="color:#aaa">${team.d}</td>
       <td class="lb-l">${team.l}</td>
       <td>${diffStr}</td>
-      <td class="lb-pts">${gamesPlayed}</td>
     `;
     tbody.appendChild(tr);
   });
