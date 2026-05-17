@@ -48,6 +48,18 @@
     <div id="schedule-container">
       <div class="loading"><div class="spinner"></div><br>Lade Spielplan…</div>
     </div>
+
+    <div class="finals-section" id="finals-section">
+      <div class="finals-title">
+        <span style="-webkit-text-fill-color:initial;font-size:1.4rem">🏆</span>
+        <div>
+          <h2>Finals</h2>
+          <span class="finals-sub">Ab 18:30 Uhr · Platzierungen basieren auf Gruppenphase</span>
+        </div>
+      </div>
+      <div id="finals-provisional" class="finals-provisional">Provisorisch</div>
+      <div id="finals-container"></div>
+    </div>
   </div>
 
   <footer>Beach Volleyball & Spikeball · Davos 2026</footer>
@@ -61,6 +73,84 @@
 <script>
   let currentFilter = 'all';
   let currentScores = {};
+
+  // ── Finals bracket definition (rank-based) ───────────────
+  const FINALS = [
+    { time: "18:30", games: [
+      { field: "BV1",  sport: "volleyball", r1: 11, r2: 12 },
+      { field: "BV2",  sport: "volleyball", r1: 13, r2: 14 },
+      { field: "SPK1", sport: "spikeball",  r1: 7,  r2: 8  },
+      { field: "SPK2", sport: "spikeball",  r1: 5,  r2: 6  },
+    ]},
+    { time: "18:50", games: [
+      { field: "BV1",  sport: "volleyball", r1: 9,  r2: 10 },
+      { field: "BV2",  sport: "volleyball", r1: 7,  r2: 8  },
+      { field: "SPK1", sport: "spikeball",  r1: 3,  r2: 4  },
+      { field: "SPK2", sport: "spikeball",  r1: 1,  r2: 2  },
+    ]},
+    { time: "19:10", games: [
+      { field: "BV1",  sport: "volleyball", r1: 5,  r2: 6  },
+      { field: "BV2",  sport: "volleyball", r1: 3,  r2: 4  },
+    ]},
+    { time: "19:30", games: [
+      { field: "BV1",  sport: "volleyball", r1: 1,  r2: 2, grandFinal: true },
+    ]},
+  ];
+
+  function computeStandings(scores) {
+    const stats = {};
+    TEAMS.forEach(t => {
+      stats[t.id] = { id: t.id, pts: 0, gf: 0, ga: 0 };
+    });
+    GAMES.forEach(g => {
+      const s = scores[g.id];
+      if (!s || s.score1 == null || s.score2 == null) return;
+      const s1 = Number(s.score1), s2 = Number(s.score2);
+      stats[g.team1].gf += s1; stats[g.team1].ga += s2;
+      stats[g.team2].gf += s2; stats[g.team2].ga += s1;
+      if (s1 > s2)      { stats[g.team1].pts += 3; }
+      else if (s1 < s2) { stats[g.team2].pts += 3; }
+      else              { stats[g.team1].pts += 1; stats[g.team2].pts += 1; }
+    });
+    return Object.values(stats).sort((a, b) =>
+      b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf
+    );
+  }
+
+  function renderFinals() {
+    const container = document.getElementById('finals-container');
+    const standings = computeStandings(currentScores);
+
+    function teamLabel(rank) {
+      const entry = standings[rank - 1];
+      if (!entry) return `${rank}. Platz`;
+      const name = getTeamDisplayName(entry.id);
+      return `<span style="color:var(--text-muted);font-size:0.8em">${rank}.</span> ${name}`;
+    }
+
+    container.innerHTML = '';
+    FINALS.forEach(slot => {
+      const group = document.createElement('div');
+      group.className = 'time-group';
+      group.innerHTML = `<div class="time-label">🕐 ${slot.time} Uhr</div>`;
+
+      slot.games.forEach(game => {
+        const row = document.createElement('div');
+        row.className = `game-row${game.grandFinal ? ' grand-final' : ''}`;
+        row.innerHTML = `
+          <span class="sport-dot ${game.sport}"></span>
+          <span class="game-field">${game.field}</span>
+          <span class="game-teams">${teamLabel(game.r1)}<span class="game-vs">vs</span>${teamLabel(game.r2)}</span>
+          ${game.grandFinal
+            ? `<span class="grand-final-badge">🏆 Finale</span>`
+            : `<span class="sport-badge ${game.sport}">${game.sport === 'volleyball' ? 'BV' : 'SPK'}</span>`}
+        `;
+        group.appendChild(row);
+      });
+
+      container.appendChild(group);
+    });
+  }
 
   function renderSchedule() {
     const container = document.getElementById('schedule-container');
@@ -120,16 +210,27 @@
     });
   });
 
+  function updateProvisional() {
+    const finalizeAt = new Date('2026-05-23T18:25:00');
+    const el = document.getElementById('finals-provisional');
+    if (el) el.style.display = new Date() < finalizeAt ? 'block' : 'none';
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     renderSchedule();
+    renderFinals();
+    updateProvisional();
+    setInterval(updateProvisional, 30000);
     try {
       db.ref('teamNames').on('value', snap => {
         teamNamesCache = snap.val() || {};
         renderSchedule();
+        renderFinals();
       });
       db.ref('scores').on('value', snap => {
         currentScores = snap.val() || {};
         renderSchedule();
+        renderFinals();
       });
     } catch(e) { console.warn('Firebase nicht verbunden:', e); }
   });

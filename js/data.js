@@ -3,9 +3,9 @@ const TEAMS = [
   { id: 1,  player1: "Olivia",   player2: "Noah"     },
   { id: 2,  player1: "Calvin",   player2: "Féde"     },
   { id: 3,  player1: "Valentin", player2: "Nicolas"  },
-  { id: 4,  player1: "Mischa",   player2: "Armin"    },
+  { id: 4,  player1: "Annina",   player2: "Beda"     },
   { id: 5,  player1: "Maja",     player2: "Roland"   },
-  { id: 6,  player1: "Annina",   player2: "Beda"     },
+  { id: 6,  player1: "Mischa",   player2: "Armin"    },
   { id: 7,  player1: "Elia",     player2: "Luis"     },
   { id: 8,  player1: "Alan",     player2: "Dino"     },
   { id: 9,  player1: "Silvan",   player2: "Lukas"    },
@@ -42,86 +42,82 @@ function getTeamFullDisplay(id) {
 
 // ── SCHEDULE ────────────────────────────────────────────────
 // 45 games, each team plays exactly 6 games.
-// Fields: BV1 (Beach Volleyball, always), BV2 (Beach Volleyball, 50% / slots 1-7),
-//         SPK1 & SPK2 (Spikeball, always).
-// Time slots: 14:00–18:40 in 20-minute steps.
-// Sport mix: ~22 volleyball, ~23 spikeball.
+// Fields: BV1/BV2 = Beach Volleyball, SPK1/SPK2 = Spikeball.
+// BV2 off in slots 4–6 and 10–13.
+// Time slots: 14:00–18:00 in 20-minute steps (13 slots).
+// Every team: max 2 consecutive games, 2–3 BV + 3–4 SPK.
 
 const GAMES = [
   // ── Slot 1 · 14:00 ──────────────────────────────────────
-  { id: "g01", time: "14:00", field: "BV1",  sport: "volleyball", team1: 2,  team2: 15 },
-  { id: "g02", time: "14:00", field: "BV2",  sport: "volleyball", team1: 4,  team2: 13 },
-  { id: "g03", time: "14:00", field: "SPK1", sport: "spikeball",  team1: 3,  team2: 14 },
+  { id: "g01", time: "14:00", field: "BV1",  sport: "volleyball", team1: 8,  team2: 12 },
+  { id: "g02", time: "14:00", field: "BV2",  sport: "volleyball", team1: 4,  team2: 5  },
+  { id: "g03", time: "14:00", field: "SPK1", sport: "spikeball",  team1: 3,  team2: 7  },
+  { id: "g04", time: "14:00", field: "SPK2", sport: "spikeball",  team1: 11, team2: 15 },
 
   // ── Slot 2 · 14:20 ──────────────────────────────────────
-  { id: "g04", time: "14:20", field: "BV1",  sport: "volleyball", team1: 5,  team2: 12 },
-  { id: "g05", time: "14:20", field: "BV2",  sport: "volleyball", team1: 7,  team2: 10 },
-  { id: "g06", time: "14:20", field: "SPK1", sport: "spikeball",  team1: 6,  team2: 11 },
+  { id: "g05", time: "14:20", field: "BV1",  sport: "volleyball", team1: 2,  team2: 13 },
+  { id: "g06", time: "14:20", field: "BV2",  sport: "volleyball", team1: 10, team2: 11 },
+  { id: "g07", time: "14:20", field: "SPK1", sport: "spikeball",  team1: 14, team2: 15 },
+  { id: "g08", time: "14:20", field: "SPK2", sport: "spikeball",  team1: 1,  team2: 4  },
 
   // ── Slot 3 · 14:40 ──────────────────────────────────────
-  { id: "g07", time: "14:40", field: "BV1",  sport: "volleyball", team1: 8,  team2: 9  },
-  { id: "g08", time: "14:40", field: "BV2",  sport: "volleyball", team1: 2,  team2: 13 },
-  { id: "g09", time: "14:40", field: "SPK1", sport: "spikeball",  team1: 1,  team2: 14 },
+  { id: "g09", time: "14:40", field: "BV1",  sport: "volleyball", team1: 12, team2: 14 },
+  { id: "g10", time: "14:40", field: "BV2",  sport: "volleyball", team1: 5,  team2: 7  },
+  { id: "g11", time: "14:40", field: "SPK1", sport: "spikeball",  team1: 1,  team2: 13 },
+  { id: "g12", time: "14:40", field: "SPK2", sport: "spikeball",  team1: 3,  team2: 8  },
 
-  // ── Slot 4 · 15:00 ──────────────────────────────────────
-  { id: "g10", time: "15:00", field: "BV1",  sport: "volleyball", team1: 3,  team2: 12 },
-  { id: "g11", time: "15:00", field: "BV2",  sport: "volleyball", team1: 5,  team2: 10 },
-  { id: "g12", time: "15:00", field: "SPK1", sport: "spikeball",  team1: 4,  team2: 11 },
+  // ── Slot 4 · 15:00 (BV2 off) ────────────────────────────
+  { id: "g13", time: "15:00", field: "BV1",  sport: "volleyball", team1: 9,  team2: 11 },
+  { id: "g14", time: "15:00", field: "SPK1", sport: "spikeball",  team1: 4,  team2: 6  },
+  { id: "g15", time: "15:00", field: "SPK2", sport: "spikeball",  team1: 2,  team2: 12 },
 
-  // ── Slot 5 · 15:20 ──────────────────────────────────────
-  { id: "g13", time: "15:20", field: "BV1",  sport: "volleyball", team1: 6,  team2: 9  },
-  { id: "g14", time: "15:20", field: "BV2",  sport: "volleyball", team1: 15, team2: 13 },
-  { id: "g15", time: "15:20", field: "SPK1", sport: "spikeball",  team1: 7,  team2: 8  },
+  // ── Slot 5 · 15:20 (BV2 off) ────────────────────────────
+  { id: "g16", time: "15:20", field: "BV1",  sport: "volleyball", team1: 10, team2: 15 },
+  { id: "g17", time: "15:20", field: "SPK1", sport: "spikeball",  team1: 2,  team2: 11 },
+  { id: "g18", time: "15:20", field: "SPK2", sport: "spikeball",  team1: 8,  team2: 13 },
 
-  // ── Slot 6 · 15:40 ──────────────────────────────────────
-  { id: "g16", time: "15:40", field: "BV1",  sport: "volleyball", team1: 1,  team2: 12 },
-  { id: "g17", time: "15:40", field: "BV2",  sport: "volleyball", team1: 3,  team2: 10 },
-  { id: "g18", time: "15:40", field: "SPK1", sport: "spikeball",  team1: 2,  team2: 11 },
+  // ── Slot 6 · 15:40 (BV2 off) ────────────────────────────
+  { id: "g19", time: "15:40", field: "BV1",  sport: "volleyball", team1: 4,  team2: 13 },
+  { id: "g20", time: "15:40", field: "SPK1", sport: "spikeball",  team1: 1,  team2: 6  },
+  { id: "g21", time: "15:40", field: "SPK2", sport: "spikeball",  team1: 9,  team2: 14 },
 
   // ── Slot 7 · 16:00 ──────────────────────────────────────
-  { id: "g19", time: "16:00", field: "BV1",  sport: "volleyball", team1: 4,  team2: 9  },
-  { id: "g20", time: "16:00", field: "BV2",  sport: "volleyball", team1: 6,  team2: 7  },
-  { id: "g21", time: "16:00", field: "SPK1", sport: "spikeball",  team1: 5,  team2: 8  },
+  { id: "g22", time: "16:00", field: "BV1",  sport: "volleyball", team1: 3,  team2: 14 },
+  { id: "g23", time: "16:00", field: "BV2",  sport: "volleyball", team1: 1,  team2: 7  },
+  { id: "g24", time: "16:00", field: "SPK1", sport: "spikeball",  team1: 5,  team2: 15 },
+  { id: "g25", time: "16:00", field: "SPK2", sport: "spikeball",  team1: 11, team2: 12 },
 
-  // ── Slot 8 · 16:20 (BV2 no longer available) ────────────
-  { id: "g22", time: "16:20", field: "BV1",  sport: "volleyball", team1: 14, team2: 12 },
-  { id: "g23", time: "16:20", field: "SPK1", sport: "spikeball",  team1: 15, team2: 11 },
-  { id: "g24", time: "16:20", field: "SPK2", sport: "spikeball",  team1: 1,  team2: 10 },
+  // ── Slot 8 · 16:20 ──────────────────────────────────────
+  { id: "g26", time: "16:20", field: "BV1",  sport: "volleyball", team1: 2,  team2: 5  },
+  { id: "g27", time: "16:20", field: "BV2",  sport: "volleyball", team1: 6,  team2: 15 },
+  { id: "g28", time: "16:20", field: "SPK1", sport: "spikeball",  team1: 3,  team2: 10 },
+  { id: "g29", time: "16:20", field: "SPK2", sport: "spikeball",  team1: 7,  team2: 9  },
 
   // ── Slot 9 · 16:40 ──────────────────────────────────────
-  { id: "g25", time: "16:40", field: "BV1",  sport: "volleyball", team1: 2,  team2: 9  },
-  { id: "g26", time: "16:40", field: "SPK1", sport: "spikeball",  team1: 3,  team2: 8  },
-  { id: "g27", time: "16:40", field: "SPK2", sport: "spikeball",  team1: 4,  team2: 7  },
+  { id: "g30", time: "16:40", field: "BV1",  sport: "volleyball", team1: 1,  team2: 11 },
+  { id: "g31", time: "16:40", field: "BV2",  sport: "volleyball", team1: 2,  team2: 9  },
+  { id: "g32", time: "16:40", field: "SPK1", sport: "spikeball",  team1: 10, team2: 12 },
+  { id: "g33", time: "16:40", field: "SPK2", sport: "spikeball",  team1: 4,  team2: 8  },
 
-  // ── Slot 10 · 17:00 ─────────────────────────────────────
-  { id: "g28", time: "17:00", field: "BV1",  sport: "volleyball", team1: 5,  team2: 6  },
-  { id: "g29", time: "17:00", field: "SPK1", sport: "spikeball",  team1: 13, team2: 11 },
-  { id: "g30", time: "17:00", field: "SPK2", sport: "spikeball",  team1: 14, team2: 10 },
+  // ── Slot 10 · 17:00 (BV2 off) ───────────────────────────
+  { id: "g34", time: "17:00", field: "BV1",  sport: "volleyball", team1: 4,  team2: 7  },
+  { id: "g35", time: "17:00", field: "SPK1", sport: "spikeball",  team1: 3,  team2: 13 },
+  { id: "g36", time: "17:00", field: "SPK2", sport: "spikeball",  team1: 5,  team2: 6  },
 
-  // ── Slot 11 · 17:20 ─────────────────────────────────────
-  { id: "g31", time: "17:20", field: "BV1",  sport: "volleyball", team1: 15, team2: 9  },
-  { id: "g32", time: "17:20", field: "SPK1", sport: "spikeball",  team1: 1,  team2: 8  },
-  { id: "g33", time: "17:20", field: "SPK2", sport: "spikeball",  team1: 2,  team2: 7  },
+  // ── Slot 11 · 17:20 (BV2 off) ───────────────────────────
+  { id: "g37", time: "17:20", field: "BV1",  sport: "volleyball", team1: 3,  team2: 15 },
+  { id: "g38", time: "17:20", field: "SPK1", sport: "spikeball",  team1: 1,  team2: 12 },
+  { id: "g39", time: "17:20", field: "SPK2", sport: "spikeball",  team1: 7,  team2: 10 },
 
-  // ── Slot 12 · 17:40 ─────────────────────────────────────
-  { id: "g34", time: "17:40", field: "BV1",  sport: "volleyball", team1: 3,  team2: 6  },
-  { id: "g35", time: "17:40", field: "SPK1", sport: "spikeball",  team1: 4,  team2: 5  },
-  { id: "g36", time: "17:40", field: "SPK2", sport: "spikeball",  team1: 12, team2: 10 },
+  // ── Slot 12 · 17:40 (BV2 off) ───────────────────────────
+  { id: "g40", time: "17:40", field: "BV1",  sport: "volleyball", team1: 6,  team2: 8  },
+  { id: "g41", time: "17:40", field: "SPK1", sport: "spikeball",  team1: 9,  team2: 10 },
+  { id: "g42", time: "17:40", field: "SPK2", sport: "spikeball",  team1: 2,  team2: 14 },
 
-  // ── Slot 13 · 18:00 ─────────────────────────────────────
-  { id: "g37", time: "18:00", field: "BV1",  sport: "volleyball", team1: 13, team2: 9  },
-  { id: "g38", time: "18:00", field: "SPK1", sport: "spikeball",  team1: 14, team2: 8  },
-  { id: "g39", time: "18:00", field: "SPK2", sport: "spikeball",  team1: 15, team2: 7  },
-
-  // ── Slot 14 · 18:20 ─────────────────────────────────────
-  { id: "g40", time: "18:20", field: "BV1",  sport: "volleyball", team1: 1,  team2: 6  },
-  { id: "g41", time: "18:20", field: "SPK1", sport: "spikeball",  team1: 2,  team2: 5  },
-  { id: "g42", time: "18:20", field: "SPK2", sport: "spikeball",  team1: 3,  team2: 4  },
-
-  // ── Slot 15 · 18:40 ─────────────────────────────────────
-  { id: "g43", time: "18:40", field: "BV1",  sport: "volleyball", team1: 1,  team2: 11 },
-  { id: "g44", time: "18:40", field: "SPK1", sport: "spikeball",  team1: 12, team2: 13 },
-  { id: "g45", time: "18:40", field: "SPK2", sport: "spikeball",  team1: 14, team2: 15 },
+  // ── Slot 13 · 18:00 (BV2 off) ───────────────────────────
+  { id: "g43", time: "18:00", field: "BV1",  sport: "volleyball", team1: 9,  team2: 13 },
+  { id: "g44", time: "18:00", field: "SPK1", sport: "spikeball",  team1: 5,  team2: 8  },
+  { id: "g45", time: "18:00", field: "SPK2", sport: "spikeball",  team1: 6,  team2: 14 },
 ];
 
 // ── HELPERS ─────────────────────────────────────────────────
