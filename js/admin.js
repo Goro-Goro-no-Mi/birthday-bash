@@ -49,39 +49,43 @@ function showAdminPanel() {
   loadAdminGames();
 }
 
-function loadAdminGames() {
+function renderAdminGames(scores) {
   const container = document.getElementById('admin-games');
-
-  db.ref('scores').on('value', snap => {
-    const scores = snap.val() || {};
-    container.innerHTML = '';
-
-    GAMES.forEach(game => {
-      const s = scores[game.id] || {};
-      const row = document.createElement('div');
-      row.className = 'admin-game-row';
-      row.innerHTML = `
-        <div class="admin-game-info">
-          <div class="meta">${game.time} · ${fieldLabel(game.field)} · <span class="sport-badge ${game.sport}">${sportLabel(game.sport)}</span></div>
-          <div><strong>${getTeamName(game.team1)}</strong> vs <strong>${getTeamName(game.team2)}</strong></div>
+  container.innerHTML = '';
+  GAMES.forEach(game => {
+    const s = scores[game.id] || {};
+    const row = document.createElement('div');
+    row.className = 'admin-game-row';
+    row.innerHTML = `
+      <div class="admin-game-info">
+        <div class="meta">${game.time} · ${fieldLabel(game.field)} · <span class="sport-badge ${game.sport}">${sportLabel(game.sport)}</span></div>
+        <div><strong>${getTeamName(game.team1)}</strong> vs <strong>${getTeamName(game.team2)}</strong></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+        <div class="admin-score-inputs">
+          <input type="number" min="0" max="99" value="${s.score1 ?? ''}" placeholder="–" id="s1-${game.id}">
+          <span style="color:var(--text-muted);font-weight:700">:</span>
+          <input type="number" min="0" max="99" value="${s.score2 ?? ''}" placeholder="–" id="s2-${game.id}">
         </div>
-        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
-          <div class="admin-score-inputs">
-            <input type="number" min="0" max="99" value="${s.score1 ?? ''}" placeholder="–" id="s1-${game.id}">
-            <span style="color:var(--text-muted);font-weight:700">:</span>
-            <input type="number" min="0" max="99" value="${s.score2 ?? ''}" placeholder="–" id="s2-${game.id}">
-          </div>
-          <button class="btn btn-sm btn-primary" onclick="saveScore('${game.id}')">Speichern</button>
-          <button class="btn btn-sm btn-ghost" onclick="clearScore('${game.id}')" title="Löschen">✕</button>
-          <label style="display:flex;align-items:center;gap:.3rem;font-size:.8rem;cursor:pointer">
-            <input type="checkbox" id="lock-${game.id}" ${s.locked ? 'checked' : ''} onchange="toggleLock('${game.id}', this.checked)">
-            🔒
-          </label>
-        </div>
-      `;
-      container.appendChild(row);
-    });
+        <button class="btn btn-sm btn-primary" onclick="saveScore('${game.id}')">Speichern</button>
+        <button class="btn btn-sm btn-ghost" onclick="clearScore('${game.id}')" title="Löschen">✕</button>
+        <label style="display:flex;align-items:center;gap:.3rem;font-size:.8rem;cursor:pointer">
+          <input type="checkbox" id="lock-${game.id}" ${s.locked ? 'checked' : ''} onchange="toggleLock('${game.id}', this.checked)">
+          🔒
+        </label>
+      </div>
+    `;
+    container.appendChild(row);
   });
+}
+
+function loadAdminGames() {
+  renderAdminGames({});
+  try {
+    db.ref('scores').on('value', snap => {
+      renderAdminGames(snap.val() || {});
+    });
+  } catch(e) { console.warn('Firebase nicht verbunden:', e); }
 }
 
 async function saveScore(gameId) {
@@ -107,6 +111,21 @@ async function clearScore(gameId) {
   if (!confirm('Ergebnis wirklich löschen?')) return;
   await db.ref(`scores/${gameId}`).remove();
   showAdminToast('Ergebnis gelöscht.');
+}
+
+async function resetAllTeamNames() {
+  if (!adminAuthed) return;
+  if (!confirm('Wirklich alle Team-Namen löschen?')) return;
+  await db.ref('teamNames').remove();
+  showAdminToast('Alle Team-Namen gelöscht ✓');
+}
+
+async function resetAllScores() {
+  if (!adminAuthed) return;
+  if (!confirm('Wirklich ALLE Scores löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+  if (!confirm('Sicher? Alle 45 Spielresultate werden gelöscht.')) return;
+  await db.ref('scores').remove();
+  showAdminToast('Alle Scores gelöscht ✓');
 }
 
 async function toggleLock(gameId, locked) {

@@ -87,9 +87,11 @@ nav {
   flex-direction: column;
   gap: 5px;
   cursor: pointer;
-  padding: 4px;
+  padding: 10px;
   background: none;
   border: none;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .nav-hamburger span {
@@ -474,6 +476,44 @@ nav {
   color: var(--accent);
 }
 
+/* ── RULES ACCORDION ────────────────────────────────────── */
+.rules-accordion {
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.rules-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 1rem;
+  background: var(--surface);
+  border: none;
+  color: var(--text);
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.rules-toggle:hover { background: var(--surface-2, rgba(255,255,255,.04)); }
+
+.rules-chevron { font-size: .75rem; color: var(--text-muted); }
+
+.rules-body {
+  padding: 1rem 1rem 1.25rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.rules-body p { margin: 0; font-size: .9rem; line-height: 1.5; color: var(--text); }
+
 /* ── FINALS ──────────────────────────────────────────────── */
 .finals-section {
   margin-top: 3rem;
@@ -695,7 +735,14 @@ select option { background: var(--surface); }
   color: var(--primary);
 }
 
-.btn-sm { padding: 0.4rem 0.85rem; font-size: 0.82rem; }
+.btn-sm { padding: 0.4rem 0.85rem; font-size: 0.82rem; min-height: 36px; }
+
+.btn-danger {
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+}
+.btn-danger:hover { background: #e03c3c; }
 
 .btn:disabled {
   opacity: 0.4;

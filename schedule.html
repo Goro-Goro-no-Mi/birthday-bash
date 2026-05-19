@@ -35,6 +35,19 @@
       <p>Samstag, 23. Mai 2026 · 14:00–19:00 · Strandbad Davos</p>
     </div>
 
+    <div class="rules-accordion">
+      <button class="rules-toggle" onclick="toggleRules(this)" aria-expanded="true">
+        📋 Spielregeln <span class="rules-chevron">▲</span>
+      </button>
+      <div class="rules-body">
+        <p>🕐 <strong>Spielzeit</strong>: Gespielt wird auf 21 Punkte mit 2 Punkten Differenz. Nach 19 Minuten wird abgepfiffen — der laufende Punkt wird noch fertig gespielt. Danach sofort das Resultat eintragen.</p>
+        <p>🏐 <strong>Anspiel</strong>: Kann ausgespielt werden.</p>
+        <p>⏱️ <strong>Einspielen</strong>: Innerhalb der 19 Minuten erlaubt, wenn der Gegner einverstanden ist.</p>
+        <p>🎯 <strong>Nach dem Satz</strong>: Ist der Satz fertig gespielt, kann man weiterspielen — zählt jedoch nicht mehr für das Turnier.</p>
+        <p>📣 <strong>Regelvorstellung</strong>: Spikeball- und Volleyball-Regeln werden um 13:45 Uhr vorgestellt.</p>
+      </div>
+    </div>
+
     <div class="schedule-filters">
       <button class="filter-btn active" data-filter="all">Alle</button>
       <button class="filter-btn" data-filter="volleyball">
@@ -71,29 +84,31 @@
 <script src="js/data.js"></script>
 <script src="js/nav.js"></script>
 <script>
+  function toggleRules(btn) {
+    const body = btn.nextElementSibling;
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', !open);
+    body.style.display = open ? 'none' : 'block';
+    btn.querySelector('.rules-chevron').textContent = open ? '▼' : '▲';
+  }
+
   let currentFilter = 'all';
   let currentScores = {};
 
-  // ── Finals bracket definition (rank-based) ───────────────
+  // ── Finals bracket (QF/SF/Final, rank-based QF, label-based SF+Final) ──
   const FINALS = [
-    { time: "18:30", games: [
-      { field: "BV1",  sport: "volleyball", r1: 11, r2: 12 },
-      { field: "BV2",  sport: "volleyball", r1: 13, r2: 14 },
-      { field: "SPK1", sport: "spikeball",  r1: 7,  r2: 8  },
-      { field: "SPK2", sport: "spikeball",  r1: 5,  r2: 6  },
+    { time: "18:30", round: "Viertelfinal", games: [
+      { field: "BV1",  sport: "volleyball", r1: 1, r2: 8 },
+      { field: "BV2",  sport: "volleyball", r1: 3, r2: 6 },
+      { field: "SPK1", sport: "spikeball",  r1: 2, r2: 7 },
+      { field: "SPK2", sport: "spikeball",  r1: 4, r2: 5 },
     ]},
-    { time: "18:50", games: [
-      { field: "BV1",  sport: "volleyball", r1: 9,  r2: 10 },
-      { field: "BV2",  sport: "volleyball", r1: 7,  r2: 8  },
-      { field: "SPK1", sport: "spikeball",  r1: 3,  r2: 4  },
-      { field: "SPK2", sport: "spikeball",  r1: 1,  r2: 2  },
+    { time: "18:55", round: "Halbfinal", games: [
+      { field: "SPK1", sport: "spikeball",  label1: "Sieger (1. vs 8.)", label2: "Sieger (3. vs 6.)" },
+      { field: "BV1",  sport: "volleyball", label1: "Sieger (2. vs 7.)", label2: "Sieger (4. vs 5.)" },
     ]},
-    { time: "19:10", games: [
-      { field: "BV1",  sport: "volleyball", r1: 5,  r2: 6  },
-      { field: "BV2",  sport: "volleyball", r1: 3,  r2: 4  },
-    ]},
-    { time: "19:30", games: [
-      { field: "BV1",  sport: "volleyball", r1: 1,  r2: 2, grandFinal: true },
+    { time: "19:20", round: "Final", games: [
+      { field: "BV1",  sport: "volleyball", label1: "Sieger HF1", label2: "Sieger HF2", grandFinal: true },
     ]},
   ];
 
@@ -132,15 +147,17 @@
     FINALS.forEach(slot => {
       const group = document.createElement('div');
       group.className = 'time-group';
-      group.innerHTML = `<div class="time-label">🕐 ${slot.time} Uhr</div>`;
+      group.innerHTML = `<div class="time-label">🕐 ${slot.time} Uhr <span style="font-size:0.8em;color:var(--text-muted);font-weight:400">· ${slot.round}</span></div>`;
 
       slot.games.forEach(game => {
+        const t1 = game.r1 ? teamLabel(game.r1) : `<span style="color:var(--text-muted);font-style:italic">${game.label1}</span>`;
+        const t2 = game.r2 ? teamLabel(game.r2) : `<span style="color:var(--text-muted);font-style:italic">${game.label2}</span>`;
         const row = document.createElement('div');
         row.className = `game-row${game.grandFinal ? ' grand-final' : ''}`;
         row.innerHTML = `
           <span class="sport-dot ${game.sport}"></span>
           <span class="game-field">${game.field}</span>
-          <span class="game-teams">${teamLabel(game.r1)}<span class="game-vs">vs</span>${teamLabel(game.r2)}</span>
+          <span class="game-teams">${t1}<span class="game-vs">vs</span>${t2}</span>
           ${game.grandFinal
             ? `<span class="grand-final-badge">🏆 Finale</span>`
             : `<span class="sport-badge ${game.sport}">${game.sport === 'volleyball' ? 'BV' : 'SPK'}</span>`}
